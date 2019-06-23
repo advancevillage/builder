@@ -133,6 +133,7 @@ esac
 
 exit 0
 EOF
+    chmod 755 $dir
 }
 
 function gen_etc_config() {
