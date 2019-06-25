@@ -196,11 +196,9 @@ function gen_debian_control() {
     dir="$build_root/DEBIAN/control"
     cat << EOF > $dir
 Package: $project
-Version: $(date +%F)
+Version: 0.0.0
 Section: free
 Priority: optional
-Depends: libssl.0.0.so, libstdc++2.10-glibc2.2
-Suggests: Openssl
 Architecture: $arch
 Installed-Size: $(du -s $build_root | awk '{print $1}')
 Maintainer: cugriver@163.com
