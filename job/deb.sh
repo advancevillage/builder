@@ -18,12 +18,16 @@ function deb_config_dir () {
     [ -d $build_root/var/run ]          || mkdir -p $build_root/var/run
     [ -d $build_root/var/log ]          || mkdir -p $build_root/var/log
 
+    [ -d $build_root/DEBIAN ]           || mkdir -p $build_root/DEBIAN
+
     gen_etc_default     $project
     gen_etc_initd       $project
     gen_etc_config      $project
     gen_etc_logrotate   $project
 
     gen_var             $project
+
+    gen_debian          $project
 }
 
 function gen_etc_default() {
@@ -169,4 +173,39 @@ function gen_var() {
     project=${1:-""}
     [ -d $build_root/var/log/$project ]     || mkdir -p $build_root/var/log/$project
     [ -d $build_root/var/run/$project ]     || mkdir -p $build_root/var/run/$project
+}
+
+function gen_debian() {
+    project=${1:-""}
+    ##
+    #DEBIAN目录中
+    # control                       必须存在
+    # preinst(preinstallation)      软件安装前需要执行的脚本
+    # postinst(postinstallation)    软件安装后需要执行的脚本
+    # prerm(preremove)              软件卸载前需要执行的脚本
+    # postrm(postremove)            软件卸载后需要执行的脚本
+    # copyright (版权)
+    # changlog （修订记录)
+    ##
+    gen_debian_control $project "amd64"
+}
+
+function gen_debian_control() {
+    project=${1:-""}
+    arch=${2:-"amd64"}
+    dir="$build_root/DEBIAN/control"
+    cat << EOF > $dir
+Package: $project
+Version: $(date +%F)
+Section: free
+Priority: optional
+Depends: libssl.0.0.so, libstdc++2.10-glibc2.2
+Suggests: Openssl
+Architecture: $arch
+Installed-Size: $(du -s $build_root | awk '{print $1}')
+Maintainer: cugriver@163.com
+Provides: $project
+Description: Web Service
+
+EOF
 }
